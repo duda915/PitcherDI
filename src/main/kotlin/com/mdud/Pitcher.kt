@@ -16,13 +16,15 @@ object Pitcher {
             Float::class -> 0f as T
             Long::class -> 0 as T
             Double::class -> 0 as T
-            else -> {
-                val parametersInstances = kClass.primaryConstructor?.parameters?.map { createInstance(it.type.jvmErasure) }
-                        ?.toTypedArray() ?: arrayOf()
-                kClass.primaryConstructor?.call(*parametersInstances)
-                        ?: throw RuntimeException("Cannot instantiate class ${kClass.simpleName}")
-            }
+            else -> instantiateFromConstructor(kClass)
         }
+    }
+
+    private fun <T : Any> instantiateFromConstructor(kClass: KClass<T>): T {
+        val parametersInstances = kClass.primaryConstructor?.parameters?.map { createInstance(it.type.jvmErasure) }
+                ?.toTypedArray() ?: arrayOf()
+        return kClass.primaryConstructor?.call(*parametersInstances)
+                ?: throw RuntimeException("Cannot instantiate class ${kClass.simpleName}")
     }
 
     fun <T : Any, R : Any>checkClassEquality(actual : KClass<T>, expected : KClass<R> ) : Boolean {
