@@ -4,12 +4,27 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class PitcherTest {
+class PitcherPrimitiveTest {
+
+
+    @Test
+    fun createInstance_ByteClass_ShouldReturnByteClass() {
+        val instance = Pitcher.getInstance(Byte::class)
+        val result = Pitcher.checkClassEquality(instance::class, Byte::class)
+        assertTrue(result)
+    }
 
     @Test
     fun createInstance_CharClass_ShouldReturnCharClass() {
         val instance = Pitcher.getInstance(Char::class)
         val result = Pitcher.checkClassEquality(instance::class, Char::class)
+        assertTrue(result)
+    }
+
+    @Test
+    fun createInstance_ShortClass_ShouldReturnShortClass() {
+        val instance = Pitcher.getInstance(Short::class)
+        val result = Pitcher.checkClassEquality(instance::class, Short::class)
         assertTrue(result)
     }
 
@@ -28,19 +43,17 @@ class PitcherTest {
     }
 
     @Test
-    fun createInstance_NoArgsConstructor_ShouldReturnSameKClass() {
-        val instance = Pitcher.getInstance(NoArgsConstructorClass::class)
-        val result = Pitcher.checkClassEquality(instance::class, NoArgsConstructorClass::class)
+    fun createInstance_LongClass_ShouldReturnLongClass() {
+        val instance = Pitcher.getInstance(Long::class)
+        val result = Pitcher.checkClassEquality(instance::class, Long::class)
         assertTrue(result)
     }
 
     @Test
-    fun createInstance_StringClass_ShouldReturnStringClass() {
-        val instance = Pitcher.getInstance(String::class)
-        val result = Pitcher.checkClassEquality(instance::class, String::class)
+    fun createInstance_DoubleClass_ShouldReturnDoubleClass() {
+        val instance = Pitcher.getInstance(Double::class)
+        val result = Pitcher.checkClassEquality(instance::class, Double::class)
         assertTrue(result)
     }
-
 }
 
-class NoArgsConstructorClass
