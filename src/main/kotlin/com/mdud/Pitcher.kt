@@ -1,7 +1,6 @@
 package com.mdud
 
 import kotlin.reflect.KClass
-import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.jvmErasure
 
@@ -12,8 +11,7 @@ object Pitcher : PitcherInterface{
 
     @Suppress("UNCHECKED_CAST")
     override fun <T:Any> pour(kClass : KClass<T>) : T{
-        val classToPour = checkIfClassImplementationExist(kClass)
-
+        val classToPour = getImplementationClass(kClass)
         return if(checkForFormulaExistence(classToPour)) {
             formulaBuilder(classToPour) as T
         } else {
@@ -22,7 +20,7 @@ object Pitcher : PitcherInterface{
     }
 
     override fun <T : Any, R : Any> mix(abstractClass: KClass<T>, implementationClass: KClass<R>) {
-        if(checkConcreteToAbstractEquality(implementationClass, abstractClass)) {
+        if(PitcherUtils.checkConcreteToAbstractEquality(implementationClass, abstractClass)) {
             abstractToConcreteHashMap[abstractClass] = implementationClass
         } else {
             throw RuntimeException("${implementationClass.simpleName} is not implementation of ${abstractClass.simpleName}")
@@ -71,31 +69,10 @@ object Pitcher : PitcherInterface{
                 ?: throw RuntimeException("Cannot instantiate class ${kClass.simpleName}")
     }
 
-    fun checkClassEquality(actual : KClass<*>, expected : KClass<*> ) : Boolean {
-        return actual == expected
-    }
-
-    private fun checkConcreteToAbstractEquality(concrete: KClass<*>, abstract: KClass<*>) : Boolean {
-        checkAndThrowIfClassIsNotConcrete(concrete)
-        checkAndThrowIfClassIsNotAbstract(abstract)
-        return concrete.isSubclassOf(abstract)
-    }
-
-    private fun checkAndThrowIfClassIsNotConcrete(concrete: KClass<*>) {
-        if (concrete.isAbstract) {
-            throw RuntimeException("${concrete.simpleName} is abstract")
-        }
-    }
-
-    private fun <T : Any> checkAndThrowIfClassIsNotAbstract(abstractClass: KClass<T>) {
-        if (!abstractClass.isAbstract) {
-            throw RuntimeException("${abstractClass.simpleName} is not abstract")
-        }
-    }
-
-    private  fun <T : Any> checkIfClassImplementationExist(classToCheck : KClass<T>) : KClass<*> {
+    private  fun <T : Any> getImplementationClass(classToCheck : KClass<T>) : KClass<*> {
         return abstractToConcreteHashMap[classToCheck] ?: classToCheck
     }
 
 
 }
+
