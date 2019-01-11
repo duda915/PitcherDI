@@ -45,7 +45,6 @@ class PitcherInterfaceRegister {
         Pitcher.mix(ITest::class, ITest::class)
     }
 
-
 }
 
 interface ITest {

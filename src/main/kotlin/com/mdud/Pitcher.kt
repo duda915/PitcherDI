@@ -7,12 +7,18 @@ import kotlin.reflect.jvm.jvmErasure
 
 object Pitcher : PitcherInterface{
 
-    val abstractToConcreteHashMap = mutableMapOf<KClass<*>, KClass<*>>()
-    val instantiateFunctionsHashMap = mutableMapOf<KClass<*>, Function<*>>()
+    private val abstractToConcreteHashMap = mutableMapOf<KClass<*>, KClass<*>>()
+    private val instantiateFunctionsHashMap = mutableMapOf<KClass<*>, () -> Any>()
 
     @Suppress("UNCHECKED_CAST")
     override fun <T:Any> pour(kClass : KClass<T>) : T{
-        return instanceBuilder(checkIfClassImplementationExist(kClass)) as T
+        val classToPour = checkIfClassImplementationExist(kClass)
+
+        return if(checkForFormulaExistence(classToPour)) {
+            formulaBuilder(classToPour) as T
+        } else {
+            instanceBuilder(classToPour) as T
+        }
     }
 
     override fun <T : Any, R : Any> mix(abstractClass: KClass<T>, implementationClass: KClass<R>) {
@@ -26,6 +32,22 @@ object Pitcher : PitcherInterface{
 
     override fun <T : Any> purify(abstractClass : KClass<T>) {
         abstractToConcreteHashMap.remove(abstractClass)
+    }
+
+    override fun <T : Any> addFormula(formula: () -> T) {
+        instantiateFunctionsHashMap[formula.invoke()::class] = formula
+    }
+
+    override fun <T : Any> removeFormulaForClass(kClass: KClass<T>) {
+        instantiateFunctionsHashMap.remove(kClass)
+    }
+
+    private fun <T : Any> checkForFormulaExistence(kClass: KClass<T>) : Boolean{
+        return instantiateFunctionsHashMap.containsKey(kClass)
+    }
+
+    private fun <T : Any> formulaBuilder(kClass: KClass<T>) : Any? {
+        return instantiateFunctionsHashMap[kClass]?.invoke()
     }
 
     @Suppress("UNCHECKED_CAST")
