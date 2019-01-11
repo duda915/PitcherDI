@@ -15,6 +15,13 @@ class PitcherClassFluidTest {
     }
 
     @Test
+    fun pour_AddFormula_ShouldReturnClassFromFormula_SecondMethod() {
+        Pitcher.addFormula { A(15) }
+        val instance = Pitcher.pour(A::class)
+        val result = instance.int == 15
+        assertTrue(result)
+    }
+    @Test
     fun pour_RemoveFormula_ShouldInstantiateClassWithDefaultValues() {
         Pitcher.addFormula(FactoryClass::bBean)
         Pitcher.removeFormulaForClass(B::class)
