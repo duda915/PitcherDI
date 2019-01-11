@@ -9,6 +9,10 @@ object Pitcher : PitcherInterface{
     private val abstractToConcreteHashMap = mutableMapOf<KClass<*>, KClass<*>>()
     private val instantiateFunctionsHashMap = mutableMapOf<KClass<*>, () -> Any>()
 
+    init {
+
+    }
+
     @Suppress("UNCHECKED_CAST")
     override fun <T:Any> pour(kClass : KClass<T>) : T{
         val classToPour = getImplementationClass(kClass)

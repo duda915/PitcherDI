@@ -5,7 +5,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class PitcherClassFluidTest {
-
     @Test
     fun pour_AddFormula_ShouldReturnClassFromFormula() {
         Pitcher.addFormula(FactoryClass::aBean)
