@@ -1,6 +1,7 @@
 package com.mdud
 
 import kotlin.reflect.KClass
+import kotlin.reflect.KFunction
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.jvmErasure
 
@@ -67,10 +68,16 @@ object Pitcher : PitcherInterface{
     }
 
     private fun <T : Any> instantiateFromConstructor(kClass: KClass<T>): T {
-        val parametersInstances = kClass.primaryConstructor?.parameters?.map { instanceBuilder(it.type.jvmErasure) }
+        val parametersInstances = kClass.primaryConstructor?.parameters?.map { pour(it.type.jvmErasure) }
                 ?.toTypedArray() ?: arrayOf()
         return kClass.primaryConstructor?.call(*parametersInstances)
                 ?: throw RuntimeException("Cannot instantiate class ${kClass.simpleName}")
+    }
+
+    fun <T : Any> instantiateFromKFunction(kFunction: KFunction<T>) : T {
+        val parameters = kFunction.parameters.map { pour(it.type.jvmErasure) }
+                .toTypedArray()
+        return kFunction.call(*parameters)
     }
 
     private  fun <T : Any> getImplementationClass(classToCheck : KClass<T>) : KClass<*> {
