@@ -7,21 +7,21 @@ class PitcherClassTest {
 
     @Test
     fun createInstance_NoArgsConstructorClass_ShouldReturnSameClass() {
-        val instance = Pitcher.createInstance(NoArgsConstructorClass::class)
+        val instance = Pitcher.pour(NoArgsConstructorClass::class)
         val result = Pitcher.checkClassEquality(instance::class, NoArgsConstructorClass::class)
         assertTrue(result)
     }
 
     @Test
     fun createInstance_PrimitiveTypesConstructor_ShouldReturnSameClass() {
-        val instance = Pitcher.createInstance(PrimitiveTypesConstructor::class)
+        val instance = Pitcher.pour(PrimitiveTypesConstructor::class)
         val result = Pitcher.checkClassEquality(instance::class, PrimitiveTypesConstructor::class)
         assertTrue(result)
     }
 
     @Test
     fun createInstance_CompositeClassConstructor_ShouldReturnSameClass() {
-        val instance = Pitcher.createInstance(CompositeClassConstructor::class)
+        val instance = Pitcher.pour(CompositeClassConstructor::class)
         val result = Pitcher.checkClassEquality(instance::class, CompositeClassConstructor::class)
         assertTrue(result)
     }

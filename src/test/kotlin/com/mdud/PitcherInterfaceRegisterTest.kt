@@ -5,14 +5,46 @@ import kotlin.test.assertTrue
 
 class PitcherInterfaceRegister {
 
+
+
     @Test
-    fun createInstance_TestInterfaceInstantiation_ShouldReturnInterfaceInstance() {
-        Pitcher.addImplementation(ITest::class, TestImpl::class)
-        val instance = Pitcher.createInstance(ITest::class)
-        val result = Pitcher.checkClassEquality(instance::class, ITest::class)
-        assertTrue(instance is ITest)
+    fun pour_AddInterfaceBindingAndInstantiate_ShouldReturnProperInterfaceImplementation() {
+        Pitcher.mix(ITest::class, TestImpl::class)
+        val instance = Pitcher.pour(ITest::class)
+        val result = instance is TestImpl
+        assertTrue(result)
     }
-    
+
+    @Test
+    fun pour_AddTwoInterfaces_ShouldContainAndReturnOnlyLastAddedImplementation() {
+        Pitcher.mix(ITest::class, TestImpl::class)
+        Pitcher.mix(ITest::class, TestImpl2::class)
+        val instance = Pitcher.pour(ITest::class)
+        val result = instance is TestImpl2
+        assertTrue(result)
+    }
+
+    @Test(expected = RuntimeException::class)
+    fun pour_TryInstantiateWithoutBinding_ShouldThrowRuntimeException() {
+        Pitcher.purify(ITest::class)
+        Pitcher.pour(ITest::class)
+    }
+
+    @Test(expected = RuntimeException::class)
+    fun mix_TryAddInterfaceBindingToClassNotImplementingThisInterface_ShouldThrowRuntimeException() {
+        Pitcher.mix(ITest::class, NotImplementationClass::class)
+    }
+
+    @Test(expected = RuntimeException::class)
+    fun mix_TryAddNotInterfaceBinding_ShouldThrowRuntimeException() {
+        Pitcher.mix(TestImpl2::class, TestImpl::class)
+    }
+
+    @Test(expected = RuntimeException::class)
+    fun mix_TryAddInterfaceToInterfaceBinding_ShouldThrowRuntimeException() {
+        Pitcher.mix(ITest::class, ITest::class)
+    }
+
 
 }
 
@@ -31,3 +63,5 @@ class TestImpl2 : ITest {
 
     fun internal() {}
 }
+
+class NotImplementationClass

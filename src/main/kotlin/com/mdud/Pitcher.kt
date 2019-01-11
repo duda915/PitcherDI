@@ -1,18 +1,31 @@
 package com.mdud
 
-import kotlin.math.exp
 import kotlin.reflect.KClass
 import kotlin.reflect.full.isSubclassOf
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.jvm.jvmErasure
 
-object Pitcher {
+object Pitcher : PitcherInterface{
 
-    val interfaceHashMap = mutableMapOf<KClass<*>, KClass<*>>()
+    val abstractToConcreteHashMap = mutableMapOf<KClass<*>, KClass<*>>()
+    val instantiateFunctionsHashMap = mutableMapOf<KClass<*>, Function<*>>()
 
     @Suppress("UNCHECKED_CAST")
-    fun <T:Any> createInstance(kClass : KClass<T>) : T{
+    override fun <T:Any> pour(kClass : KClass<T>) : T{
         return instanceBuilder(checkIfClassImplementationExist(kClass)) as T
+    }
+
+    override fun <T : Any, R : Any> mix(abstractClass: KClass<T>, implementationClass: KClass<R>) {
+        if(checkConcreteToAbstractEquality(implementationClass, abstractClass)) {
+            abstractToConcreteHashMap[abstractClass] = implementationClass
+        } else {
+            throw RuntimeException("${implementationClass.simpleName} is not implementation of ${abstractClass.simpleName}")
+        }
+        abstractToConcreteHashMap[abstractClass] = implementationClass
+    }
+
+    override fun <T : Any> purify(abstractClass : KClass<T>) {
+        abstractToConcreteHashMap.remove(abstractClass)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -40,13 +53,26 @@ object Pitcher {
         return actual == expected
     }
 
+    private fun checkConcreteToAbstractEquality(concrete: KClass<*>, abstract: KClass<*>) : Boolean {
+        checkAndThrowIfClassIsNotConcrete(concrete)
+        checkAndThrowIfClassIsNotAbstract(abstract)
+        return concrete.isSubclassOf(abstract)
+    }
 
-    fun <T : Any, R : Any> addImplementation(interfaceClass: KClass<T>, implementationClass: KClass<R>) {
-        interfaceHashMap[interfaceClass] = implementationClass
+    private fun checkAndThrowIfClassIsNotConcrete(concrete: KClass<*>) {
+        if (concrete.isAbstract) {
+            throw RuntimeException("${concrete.simpleName} is abstract")
+        }
+    }
+
+    private fun <T : Any> checkAndThrowIfClassIsNotAbstract(abstractClass: KClass<T>) {
+        if (!abstractClass.isAbstract) {
+            throw RuntimeException("${abstractClass.simpleName} is not abstract")
+        }
     }
 
     private  fun <T : Any> checkIfClassImplementationExist(classToCheck : KClass<T>) : KClass<*> {
-        return interfaceHashMap[classToCheck] ?: classToCheck
+        return abstractToConcreteHashMap[classToCheck] ?: classToCheck
     }
 
 
